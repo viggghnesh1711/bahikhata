@@ -1,15 +1,20 @@
 'use client'
+import { CreateCustomer } from '@/app/actions/CreateCustomer';
 import { CreateCustomerSchema } from '@/lib/validation/CreateCustomerSchema';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
+import toast from 'react-hot-toast';
 
 function page() {
+
+  const router = useRouter();
   const [form, setForm] = useState({
     name: "",
     phone: "",
     email: "",
     totalAmount:0,
     amountPaid: 0,
-    amountRemaining: "",
+    amountRemaining:0 ,
     createdDate: "",
     dueDate: "",
     description: "",
@@ -32,7 +37,7 @@ function page() {
     }))
   }
 
-  const handleSubmit = (e) =>{
+  const handleSubmit = async (e) =>{
     e.preventDefault();
     const result = CreateCustomerSchema.safeParse(form)
     if(!result.success){
@@ -48,7 +53,14 @@ function page() {
       });
       return;
     }
-    console.log("data is submitted",form)
+    const response = await CreateCustomer(form);
+    if(response.success){
+      toast.success(response.message)
+      router.push("/dashboard/customers")
+    }
+    else{
+      toast.error(response.message)
+    }
   }
 
   return (
