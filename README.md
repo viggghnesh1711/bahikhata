@@ -5,4 +5,4 @@ A digital ledger system for shop owners.
 Tracks customers, balances, and transactions.  
 
 -New customer page creation 
--working on cusotmers page  
+-Still-working on cusotmers page  
