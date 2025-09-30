@@ -1,11 +1,29 @@
 'use server'
 
 import { supabase } from "@/lib/supabase/client"
-import { success } from "zod"
 
-export async function FetchCustomers(){
+export async function FetchOrders(id){
     try{
-        const { data:customers, error:customerserror } = await supabase
+        const {data:orders,error:orderserror} = await supabase
+        .from('orders')
+        .select(`
+            id,
+           total_amount,
+            amount_paid,
+            amount_remaining,
+            due_date,
+            description,
+            created_at,
+            transactions (
+            id,
+            order_id,
+            amount,
+            created_at
+            )
+        `)
+        .eq('customer_id',id)
+
+         const { data:customers, error:customerserror } = await supabase
         .from('customers')
         .select(`
             id,
@@ -18,6 +36,7 @@ export async function FetchCustomers(){
             amount_remaining
             )
         `)
+        .eq('id',id)
 
             if(customerserror){
             console.log("Fetching error",customerserror)
@@ -40,11 +59,11 @@ export async function FetchCustomers(){
             };
             });
 
-            return {success:true, customers:customerSummary}
+        return{ success:true, orders:orders,customers:customerSummary}
 
     }
     catch(error){
-        console.log("CUSTOMERSLIST :server error",error)
+        console.log("FETCHORDER :server error",error)
         return{ success:false, message:'Something went wrong'}
     }
 }
